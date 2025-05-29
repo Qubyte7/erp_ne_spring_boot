@@ -310,4 +310,51 @@ public class EmployeeService implements EmployeeInterface {
         return employeeRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Employee with email " + email + " not found"));
     }
+
+
+
+
+
+
+
+    /**
+     * Creates a new employee in the system.
+     *
+     * @param request the employee details
+     * @return the created employee
+     */
+    @Override
+    @Transactional
+    public EmployeeResponse createManager(EmployeeRequest request) {
+        log.info("Creating employee with code: {}", request.code());
+
+        // Check if employee with the same code or email already exists
+        if (employeeRepo.existsByCode(request.code())) {
+            throw new IllegalArgumentException("Employee with code " + request.code() + " already exists");
+        }
+        if (employeeRepo.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("Employee with email " + request.email() + " already exists");
+        }
+
+        // Create new employee
+        Employee employee = Employee.builder()
+                .code(request.code())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
+                .mobile(request.mobile())
+                .dateOfBirth(request.dateOfBirth())
+                .role(Role.ROLE_MANAGER)
+                .status(Account.DISABLED) // New employees are inactive by default
+                .build();
+
+        // Save employee
+        Employee savedEmployee = employeeRepo.save(employee);
+        log.info("Employee created with ID: {}", savedEmployee.getId());
+
+        return EmployeeResponse.fromEntity(savedEmployee);
+    }
+
+
 }

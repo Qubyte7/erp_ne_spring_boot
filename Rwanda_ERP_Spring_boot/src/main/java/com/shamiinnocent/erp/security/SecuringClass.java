@@ -56,17 +56,6 @@ public class SecuringClass {
         return config.getAuthenticationManager();
     }
 
-//    // Temporary in-memory user store for testing
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        return new InMemoryUserDetailsManager(
-//                User.withUsername("jmv")
-//                        .password(passwordEncoder().encode("123"))
-//                        .roles("ADMIN")
-//                        .build()
-//        );
-//    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter, UserDetailsServiceImpl userDetailsService) throws Exception {
         http
@@ -74,6 +63,7 @@ public class SecuringClass {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST).permitAll()
+
                         // Employee management endpoints
                         .requestMatchers("/api/v1/employees/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
                         // Payroll processing endpoints
@@ -96,7 +86,7 @@ public class SecuringClass {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://10.12.72.182:9090", "http://10.12.72.42:9090"));
+        config.setAllowedOrigins(List.of("http://localhost:8084", "http://10.12.72.182:8084", "http://10.12.74.52:8084"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setAllowCredentials(true);

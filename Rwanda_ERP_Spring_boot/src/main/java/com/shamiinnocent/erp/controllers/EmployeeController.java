@@ -137,20 +137,7 @@ public class EmployeeController {
         return ResponseEntity.ok("Employee deleted successfully");
     }
 
-    /**
-     * Activates an employee's account.
-     *
-     * @param id the ID of the employee to activate
-     * @return the activated employee
-     */
-    @PatchMapping("/{id}/activate")
-    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
-    @Operation(summary = "Activate an employee", description = "Activates an employee's account")
-    public ResponseEntity<EmployeeResponse> activateEmployee(@PathVariable Long id) {
-        log.info("Activating employee with ID: {}", id);
-        EmployeeResponse response = employeeService.activateEmployee(id);
-        return ResponseEntity.ok(response);
-    }
+
 
     /**
      * Deactivates an employee's account.
@@ -180,18 +167,5 @@ public class EmployeeController {
         EmployeeResponse response = employeeService.getCurrentEmployee();
         return ResponseEntity.ok(response);
     }
-
-    /**
-     * Authenticates an employee and returns a JWT token.
-     *
-     * @param request the login request
-     * @return a JWT token response
-     */
-    @PostMapping("/login")
-    @Operation(summary = "Login", description = "Authenticates an employee and returns a JWT token")
-    public ResponseEntity<JwtTokenResponse> login(@Valid @RequestBody LoginRequest request) {
-        log.info("Authenticating employee with email: {}", request.email());
-        JwtTokenResponse response = employeeService.login(request);
-        return ResponseEntity.ok(response);
-    }
 }
+

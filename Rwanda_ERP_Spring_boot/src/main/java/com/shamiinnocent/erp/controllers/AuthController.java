@@ -1,173 +1,71 @@
-//package com.shamiinnocent.erp.controllers;
-//
-//import com.shamiinnocent.erp.Dtos.requests.LoginRequest;
-//import com.shamiinnocent.erp.Dtos.requests.ResetPasswordRequest;
-//import com.shamiinnocent.erp.Dtos.requests.UserRequest;
-//import com.shamiinnocent.erp.Dtos.requests.VerificationRequest;
-//import com.shamiinnocent.erp.Dtos.responses.ErrorResponse;
-//import com.shamiinnocent.erp.Dtos.responses.JwtTokenResponse;
-//import com.shamiinnocent.erp.services.EmailService;
-//import com.shamiinnocent.erp.services.EmployeeService;
-//import com.shamiinnocent.erp.utils.VerificationUtil;
-//import io.swagger.v3.oas.annotations.Operation;
-//import io.swagger.v3.oas.annotations.media.Content;
-//import io.swagger.v3.oas.annotations.media.Schema;
-//import io.swagger.v3.oas.annotations.responses.ApiResponse;
-//import io.swagger.v3.oas.annotations.responses.ApiResponses;
-//import io.swagger.v3.oas.annotations.tags.Tag;
-//import jakarta.validation.Valid;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.Map;
-//
-///**
-// * Controller for managing authentication and user-related operations.
-// * Provides endpoints for registration, activation, verification, login, and password reset.
-// *
-// * @author Fortress Backend
-// * @since 1.0
-// */
-//@Tag(name = "Auth", description = "Endpoints for authentication and user management")
-//@RequiredArgsConstructor
-//@Slf4j
-//@RestController
-//@RequestMapping("/auth")
-//public class AuthController {
-//
-//    private final EmployeeService userService;
-//    private final EmailService emailService;
-//
-//    /**
-//     * Registers a new user.
-//     *
-//     * @param request the user registration request
-//     * @return a response with the registration result
-//     */
-//    @Operation(summary = "Register a new user", description = "Creates a new user account")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "User registered successfully",
-//                    content = @Content(schema = @Schema(implementation = String.class))),
-//            @ApiResponse(responseCode = "400", description = "Invalid request data",
-//                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-//    })
-//    @PostMapping("/register")
-//    public ResponseEntity<String> register(@Valid @RequestBody UserRequest request) {
-//        log.info("Processing user registration for email: {}", request.email());
-//        String result = EmployeeService.register(request);
-//        return ResponseEntity.ok(result);
-//    }
-//
-//    /**
-//     * Initiates account activation by sending a verification code.
-//     *
-//     * @param email the request body containing the email
-//     * @return a response indicating the activation status
-//     */
-//    @Operation(summary = "Initiate account activation", description = "Sends a verification code to the user's email")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Verification code sent successfully",
-//                    content = @Content(schema = @Schema(implementation = String.class))),
-//            @ApiResponse(responseCode = "400", description = "Invalid email",
-//                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-//    })
-//    @PatchMapping("/activate/{email}")
-//    public ResponseEntity<String> activateAccount(@Valid @PathVariable String email) {
-//        log.info("Initiating account activation for email: {}", email);
-//        userService.activateAccount(email);
-//        return ResponseEntity.ok("Verification code sent to your email. Please verify your account.");
-//    }
-//
-//    /**
-//     * Verifies a user account using a verification code.
-//     *
-//     * @param request the verification request
-//     * @return a response with the verification result
-//     */
-//    @Operation(summary = "Verify a user account", description = "Verifies a user account using a provided OTP")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Account verified successfully",
-//                    content = @Content(schema = @Schema(implementation = String.class))),
-//            @ApiResponse(responseCode = "400", description = "Invalid verification data",
-//                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-//    })
-//    @PatchMapping("/verify")
-//    public ResponseEntity<String> verifyAccount(@Valid @RequestBody VerificationRequest request) {
-//        log.info("Verifying account for email: {}", request.email());
-//        String result = userService.verifyAccount(request);
-//        return ResponseEntity.ok(result);
-//    }
-//
-//    /**
-//     * Authenticates a user and issues a JWT token.
-//     *
-//     * @param request the login request
-//     * @return a response with the JWT token
-//     */
-//    @Operation(summary = "Authenticate a user", description = "Logs in a user and returns a JWT token")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "User logged in successfully",
-//                    content = @Content(schema = @Schema(implementation = JwtTokenResponse.class))),
-//            @ApiResponse(responseCode = "400", description = "Invalid credentials",
-//                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-//    })
-//    @PostMapping("/login")
-//    public ResponseEntity<JwtTokenResponse> login(@Valid @RequestBody LoginRequest request) {
-//        log.info("Processing login for email: {}", request.email());
-//        JwtTokenResponse result = userService.login(request);
-//        return ResponseEntity.ok(result);
-//    }
-//
-//    /**
-//     * Requests a password reset code.
-//     *
-//     * @param body the request body containing email and full name
-//     * @return a response indicating the reset code request status
-//     */
-//    @Operation(summary = "Request password reset code", description = "Sends a password reset code to the user's email")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Reset code sent successfully",
-//                    content = @Content(schema = @Schema(implementation = String.class))),
-//            @ApiResponse(responseCode = "400", description = "Invalid request data",
-//                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-//    })
-//    @PatchMapping("/password-reset-code")
-//    public ResponseEntity<String> passwordResetCode(@Valid @RequestBody Map<String, String> body) {
-//        String email = body.get("email");
-//        String fullName = body.get("fullName");
-//        log.info("Requesting password reset code for email: {}", email);
-//        String resetCode = VerificationUtil.generateVerificationCode();
-//        emailService.sendResetPasswordMail(new ResetPasswordRequest(email, fullName, resetCode));
-//        return ResponseEntity.ok("Password reset code sent to your email");
-//    }
-//
-//    /**
-//     * Resets a user's password using a reset code.
-//     *
-//     * @param body the request body containing email, reset code, and new password
-//     * @return a response indicating the reset status
-//     */
-//    @Operation(summary = "Reset user password", description = "Resets the user's password using a reset code")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Password reset successfully",
-//                    content = @Content(schema = @Schema(implementation = String.class))),
-//            @ApiResponse(responseCode = "400", description = "Invalid reset data",
-//                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-//    })
-//    @PatchMapping("/password-reset")
-//    public ResponseEntity<String> passwordReset(@Valid @RequestBody Map<String, String> body) {
-//        String email = body.get("email");
-//        String resetCode = body.get("resetCode");
-//        String newPassword = body.get("newPassword");
-//        log.info("Processing password reset for email: {}", email);
-//        // Placeholder: Implement password reset logic in UserService
-//        throw new UnsupportedOperationException("Password reset not implemented");
-//    }
-//
-//    @GetMapping("test")
-//    public String test(){
-//        return "Accessed!";
-//    }
-//}
+package com.shamiinnocent.erp.controllers;
+
+
+import com.shamiinnocent.erp.Dtos.requests.EmployeeRequest;
+import com.shamiinnocent.erp.Dtos.requests.LoginRequest;
+import com.shamiinnocent.erp.Dtos.responses.EmployeeResponse;
+import com.shamiinnocent.erp.Dtos.responses.JwtTokenResponse;
+import com.shamiinnocent.erp.services.EmployeeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * Controller for managing employee Login (Auth) in the ERP system.
+ */
+@RestController
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+@Slf4j
+@SecurityRequirement(name = "none")
+public class AuthController {
+
+    private final EmployeeService employeeService;
+
+    /**
+     * Authenticates an employee and returns a JWT token.
+     *
+     * @param request the login request
+     * @return a JWT token response
+     */
+    @PostMapping("/login")
+    @Operation(summary = "Login", description = "Authenticates an employee and returns a JWT token")
+    public ResponseEntity<JwtTokenResponse> login(@Valid @RequestBody LoginRequest request) {
+        log.info("Authenticating employee with email: {}", request.email());
+        JwtTokenResponse response = employeeService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Creates a new Manager
+     *
+     * @param request the employee details
+     * @return the created manager
+     */
+    @PostMapping("/manager")
+    @Operation(summary = "Create a new Manager", description = "Creates a new manager in the system")
+    public ResponseEntity<EmployeeResponse> createManager(@Valid @RequestBody EmployeeRequest request) {
+        log.info("Creating Manager with code: {}", request.code());
+        EmployeeResponse response = employeeService.createManager(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    /**
+     * Activates a manager's account.
+     *
+     * @param id the ID of the manager to activate
+     * @return the activated manager
+     */
+    @PatchMapping("/manager/{id}/activate")
+    @Operation(summary = "Activate a manager", description = "Activates a manager's account")
+    public ResponseEntity<EmployeeResponse> activateManager(@PathVariable Long id) {
+        log.info("Activating manager with ID: {}", id);
+        EmployeeResponse response = employeeService.activateEmployee(id);
+        return ResponseEntity.ok(response);
+    }
+}

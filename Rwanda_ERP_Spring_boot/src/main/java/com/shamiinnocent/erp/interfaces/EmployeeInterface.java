@@ -106,4 +106,13 @@ public interface EmployeeInterface {
      * @return the employee entity
      */
     Employee findByEmail(String email);
+
+    /**
+     * Creates a new employee in the system.
+     *
+     * @param request the employee details
+     * @return the created employee
+     */
+    EmployeeResponse createManager(EmployeeRequest request);
+
 }

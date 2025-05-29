@@ -22,7 +22,7 @@ import java.util.List;
  * Controller for managing employees in the ERP system.
  */
 @RestController
-@RequestMapping("/api/v1/employees")
+@RequestMapping("/api/v1/employees")  // Ensure this is the only base path
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Employee Management", description = "APIs for managing employees")

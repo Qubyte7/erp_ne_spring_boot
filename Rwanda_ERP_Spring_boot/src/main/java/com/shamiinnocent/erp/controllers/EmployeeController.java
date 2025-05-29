@@ -46,34 +46,6 @@ public class EmployeeController {
     }
 
     /**
-     * Creates a new ADMIN
-     *
-     * @param request the employee details
-     * @return the created employee
-     */
-    @PostMapping("/manager")
-    @Operation(summary = "Create a new employee", description = "Creates a new employee in the system")
-    public ResponseEntity<EmployeeResponse> createManager(@Valid @RequestBody EmployeeRequest request) {
-        log.info("Creating employee with code: {}", request.code());
-        EmployeeResponse response = employeeService.createEmployee(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    /**
-     * Creates a new ADMIN
-     *
-     * @param request the employee details
-     * @return the created employee
-     */
-    @PostMapping("/admin")
-    @Operation(summary = "Create a new employee", description = "Creates a new employee in the system")
-    public ResponseEntity<EmployeeResponse> createAdmin(@Valid @RequestBody EmployeeRequest request) {
-        log.info("Creating employee with code: {}", request.code());
-        EmployeeResponse response = employeeService.createEmployee(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    /**
      * Updates an existing employee.
      *
      * @param id the ID of the employee to update

@@ -23,7 +23,7 @@ import java.util.List;
 public class SecuringClass {
 
     private static final String[] WHITE_LIST = {
-            "/auth/**",
+            "/api/v1/auth/**",
             "/actuator/metrics",
             "/actuator/health",
             "/actuator/metrics/**",
